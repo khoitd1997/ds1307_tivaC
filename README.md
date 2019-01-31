@@ -2,9 +2,11 @@
 
 ds3231 RTC port for the tivaC. Customized for personal use so read the code carefully before using
 
-## Documentation
+## Documentation and Examples
 
 Right now Doxygen style comments are provided in ds3231.h file, I may build the docs and deploy it later
+
+Example of code using the ds3231 is provided in main.c
 
 ## Credits
 
