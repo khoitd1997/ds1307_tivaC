@@ -8,6 +8,10 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+/**
+ * @brief Week day and its corresponding number
+ *
+ */
 typedef enum {
   MONDAY = 1,
   TUESDAY,
@@ -19,7 +23,7 @@ typedef enum {
 } Ds3231_week_day;
 
 /**
- * @brief Used for reseting ds3231 time
+ * @brief Used for setting ds3231 time
  *
  */
 typedef struct {
@@ -35,12 +39,25 @@ typedef struct {
   uint32_t year;
 } Ds3231_time;
 
-typedef struct {
-  uint32_t i2c_base;
-} Ds3231;
-
+/**
+ * @brief Initialize i2c module of tivaC
+ *
+ */
 void ds3231_init();
+
+/**
+ * @brief Set the time of the ds3231 according to the struct
+ *
+ * @param time Time struct for clock new time
+ * @param turn_clock_on If true turn on the clock after setting the new time
+ */
 void ds3231_set_time(const Ds3231_time *time, const bool turn_clock_on);
+
+/**
+ * @brief Return current clock time in a time struct
+ *
+ * @param time The struct to fill the current time in
+ */
 void ds3231_get_time(Ds3231_time *time);
 
 /**
