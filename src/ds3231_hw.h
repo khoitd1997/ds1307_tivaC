@@ -41,7 +41,6 @@ extern "C" {
 #define DS3231_ADDR 0x68
 
 // TivaC specific stuffs
-// TODO: finish the rest of the hardware
 #define DS3231_I2C_BASE I2C0_BASE
 
 #define TOTAL_TIME_REGISTER 7
