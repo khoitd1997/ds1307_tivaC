@@ -54,9 +54,9 @@ int main(void) {
 
   Ds3231_time newTime = {
       .is_12_form = false,
-      .second = 40,
-      .minute = 39,
-      .hour = 12,
+      .second = 0,
+      .minute = 37,
+      .hour = 11,
 
       .weekDay = 4,
       .day = 31,
@@ -65,7 +65,7 @@ int main(void) {
   };
 
   ds3231_init();
-  ds3231_set_time(&newTime, true);
+  //   ds3231_set_time(&newTime, true);
 
   for (;;) {
     Ds3231_time currTime;
