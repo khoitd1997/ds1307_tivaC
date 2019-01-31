@@ -1,7 +1,21 @@
 #include "include/ds3231.h"
 
+#include <assert.h>
+
 #include "ds3231_hw.h"
 #include "ds3231_i2c.h"
+
+#include "inc/hw_i2c.h"
+#include "inc/hw_ints.h"
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+
+#include "driverlib/gpio.h"
+#include "driverlib/i2c.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/pin_map.h"
+#include "driverlib/sysctl.h"
+#include "utils/uartstdio.h"
 
 #include "tiva_utils/bit_manipulation.h"
 
@@ -16,9 +30,13 @@ static uint8_t bcd_to_int(const uint8_t num) {
 }
 
 // also turn on the clock
-void ds3231_set_time(const ds3231 *ds, const ds3231_time *time) {
+void ds3231_set_time(const Ds3231_time *time, const bool turn_clock_on) {
+  if (turn_clock_on) {
+    ds3231_osc_on();
+  }
+
   uint8_t time_regs[TOTAL_TIME_REGISTER] = {0};
-  bit_set(time_regs[0], BIT(7) | int_to_bcd(time->second));
+  bit_set(time_regs[0], int_to_bcd(time->second));
   bit_set(time_regs[1], int_to_bcd(time->minute));
 
   uint8_t hourMode = 0;
@@ -32,13 +50,12 @@ void ds3231_set_time(const ds3231 *ds, const ds3231_time *time) {
   bit_set(time_regs[5], int_to_bcd(time->month));
   bit_set(time_regs[6], int_to_bcd(time->year - CURRENT_CENTURY));
 
-  ds3231_i2c_write_regs(ds, DS3231_SEC_REG_ADDR, time_regs,
-                        TOTAL_TIME_REGISTER);
+  ds3231_i2c_write_regs(DS3231_SEC_REG_ADDR, time_regs, TOTAL_TIME_REGISTER);
 }
 
-void ds3231_get_time(const ds3231 *ds, ds3231_time *time) {
+void ds3231_get_time(Ds3231_time *time) {
   uint8_t time_regs[TOTAL_TIME_REGISTER] = {0};
-  ds3231_i2c_read_regs(ds, DS3231_SEC_REG_ADDR, time_regs, TOTAL_TIME_REGISTER);
+  ds3231_i2c_read_regs(DS3231_SEC_REG_ADDR, time_regs, TOTAL_TIME_REGISTER);
   time->second = bcd_to_int(time_regs[0]);
   time->minute = bcd_to_int(time_regs[1]);
 
@@ -58,6 +75,41 @@ void ds3231_get_time(const ds3231 *ds, ds3231_time *time) {
   time->year = bcd_to_int(time_regs[6]) + CURRENT_CENTURY;
 }
 
-void ds3231_off(const ds3231 *ds) {
-  ds3231_i2c_write_reg(ds, DS3231_SEC_REG_ADDR, 0);
+void ds3231_osc_off() {
+  uint32_t ctrl_reg = 0;
+  ds3231_i2c_read_reg(DS3231_CTL_REG_ADDR, &ctrl_reg);
+  bit_set(ctrl_reg, BIT(7));
+  ds3231_i2c_write_reg(DS3231_CTL_REG_ADDR, ctrl_reg);
+}
+
+void ds3231_osc_on() {
+  uint32_t ctrl_reg = 0;
+  ds3231_i2c_read_reg(DS3231_CTL_REG_ADDR, &ctrl_reg);
+  bit_clear(ctrl_reg, BIT(7));
+  ds3231_i2c_write_reg(DS3231_CTL_REG_ADDR, ctrl_reg);
+}
+
+void ds3231_init() {
+  // TODO: Change this for your project
+  if (false == SysCtlPeripheralReady(SYSCTL_PERIPH_I2C0)) {
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C0);
+    while (false == SysCtlPeripheralReady(SYSCTL_PERIPH_I2C0)) {
+      // wait for it to be ready
+    }
+  }
+
+  if (false == SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB)) {
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+    while (false == SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB)) {
+      // wait for it to be ready
+    }
+  }
+
+  GPIOPinConfigure(GPIO_PB2_I2C0SCL);
+  GPIOPinConfigure(GPIO_PB3_I2C0SDA);
+
+  GPIOPinTypeI2CSCL(GPIO_PORTB_BASE, GPIO_PIN_2);
+  GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_3);
+
+  I2CMasterInitExpClk(DS3231_I2C_BASE, SysCtlClockGet(), false);
 }

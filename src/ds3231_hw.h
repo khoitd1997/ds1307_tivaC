@@ -4,6 +4,8 @@
 extern "C" {
 #endif
 
+#include "inc/hw_memmap.h"
+
 // source:
 // https://android.googlesource.com/device/ti/bootloader/uboot/+/master/drivers/rtc/ds3231.c
 
@@ -17,6 +19,7 @@ extern "C" {
 #define DS3231_DATE_REG_ADDR 0x4
 #define DS3231_MON_REG_ADDR 0x5
 #define DS3231_YR_REG_ADDR 0x6
+
 #define DS3231_CTL_REG_ADDR 0x0e
 #define DS3231_STAT_REG_ADDR 0x0f
 /*
@@ -36,6 +39,10 @@ extern "C" {
 #define DS3231_STAT_BIT_OSF 0x80 /* Oscillator stop flag         */
 
 #define DS3231_ADDR 0x68
+
+// TivaC specific stuffs
+// TODO: finish the rest of the hardware
+#define DS3231_I2C_BASE I2C0_BASE
 
 #define TOTAL_TIME_REGISTER 7
 

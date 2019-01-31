@@ -4,15 +4,19 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "inc/hw_i2c.h"
+#include "inc/hw_ints.h"
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+
 #include "driverlib/gpio.h"
+#include "driverlib/i2c.h"
+#include "driverlib/interrupt.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/rom.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
-
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
 
 void uartConfigure(uint32_t baudRate) {
   // Enable the GPIO Peripheral used by the UART.
@@ -48,28 +52,32 @@ int main(void) {
   uartConfigure(UART_BAUD);
   UARTprintf("Starting\n");
 
-  ds3231 ds = {
-      .i2c_base = I2C0_BASE,
-  };
-
-  ds3231_time newTime = {
+  Ds3231_time newTime = {
       .is_12_form = false,
-      .second = 0,
-      .minute = 3,
-      .hour = 23,
+      .second = 40,
+      .minute = 39,
+      .hour = 12,
 
-      .weekDay = 3,
-      .day = 30,
+      .weekDay = 4,
+      .day = 31,
       .month = 1,
       .year = 2019,
   };
 
-  ds3231_set_time(&ds, &newTime);
+  ds3231_init();
+  ds3231_set_time(&newTime, true);
 
-  ds3231_time currTime;
-  ds3231_get_time(&ds, &currTime);
-  UARTprintf("time: %d:%d:%d, date: %d/%d/%d", currTime.hour, currTime.minute,
-             currTime.second, currTime.month, currTime.day, currTime.year);
+  for (;;) {
+    Ds3231_time currTime;
+    ds3231_get_time(&currTime);
+    UARTprintf("time: %d:%d:%d, date: %d/%d/%d\n", currTime.hour,
+               currTime.minute, currTime.second, currTime.month, currTime.day,
+               currTime.year);
+
+    for (uint32_t i = 0; i < 700000; ++i) {
+      // delay
+    }
+  }
 
   return 0;
 }

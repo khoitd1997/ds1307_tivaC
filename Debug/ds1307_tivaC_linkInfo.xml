@@ -3959,7 +3959,7 @@
          <object_component_ref idref="oc-f6"/>
       </symbol>
       <symbol id="sm-107">
-         <name>ds3231_off</name>
+         <name>ds3231_osc_off</name>
          <value>0x919</value>
          <object_component_ref idref="oc-f6"/>
       </symbol>
