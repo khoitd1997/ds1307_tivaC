@@ -91,25 +91,25 @@ void ds3231_osc_on() {
 
 void ds3231_init() {
   // TODO: Change this for your project
-  if (false == SysCtlPeripheralReady(SYSCTL_PERIPH_I2C0)) {
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C0);
-    while (false == SysCtlPeripheralReady(SYSCTL_PERIPH_I2C0)) {
+  if (false == SysCtlPeripheralReady(SYSCTL_PERIPH_I2C1)) {
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C1);
+    while (false == SysCtlPeripheralReady(SYSCTL_PERIPH_I2C1)) {
       // wait for it to be ready
     }
   }
 
-  if (false == SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB)) {
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-    while (false == SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB)) {
+  if (false == SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA)) {
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    while (false == SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA)) {
       // wait for it to be ready
     }
   }
 
-  GPIOPinConfigure(GPIO_PB2_I2C0SCL);
-  GPIOPinConfigure(GPIO_PB3_I2C0SDA);
+  GPIOPinConfigure(GPIO_PA6_I2C1SCL);
+  GPIOPinConfigure(GPIO_PA7_I2C1SDA);
 
-  GPIOPinTypeI2CSCL(GPIO_PORTB_BASE, GPIO_PIN_2);
-  GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_3);
+  GPIOPinTypeI2CSCL(GPIO_PORTA_BASE, GPIO_PIN_6);
+  GPIOPinTypeI2C(GPIO_PORTA_BASE, GPIO_PIN_7);
 
   I2CMasterInitExpClk(DS3231_I2C_BASE, SysCtlClockGet(), false);
 }
