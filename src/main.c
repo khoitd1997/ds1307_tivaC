@@ -1,4 +1,4 @@
-#include "include/ds3231.h"
+#include "ds3231.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -21,13 +21,11 @@
 void uartConfigure(uint32_t baudRate) {
   // Enable the GPIO Peripheral used by the UART.
   ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-  while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA)) {
-  }
+  while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA)) {}
 
   // Enable UART0
   ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
-  while (!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0)) {
-  }
+  while (!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0)) {}
 
   // Configure GPIO Pins for UART mode.
   GPIOPinConfigure(GPIO_PA0_U0RX);
@@ -46,22 +44,21 @@ void uartConfigure(uint32_t baudRate) {
 int main(void) {
   ROM_FPULazyStackingEnable();
 
-  SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ |
-                 SYSCTL_OSC_MAIN);
+  SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
 
   uartConfigure(UART_BAUD);
   UARTprintf("Starting\n");
 
   Ds3231_time newTime = {
       .is_12_form = false,
-      .second = 0,
-      .minute = 37,
-      .hour = 11,
+      .second     = 0,
+      .minute     = 37,
+      .hour       = 11,
 
       .weekDay = 4,
-      .day = 31,
-      .month = 1,
-      .year = 2019,
+      .day     = 31,
+      .month   = 1,
+      .year    = 2019,
   };
 
   ds3231_init();
@@ -70,8 +67,12 @@ int main(void) {
   for (;;) {
     Ds3231_time currTime;
     ds3231_get_time(&currTime);
-    UARTprintf("time: %d:%d:%d, date: %d/%d/%d\n", currTime.hour,
-               currTime.minute, currTime.second, currTime.month, currTime.day,
+    UARTprintf("time: %d:%d:%d, date: %d/%d/%d\n",
+               currTime.hour,
+               currTime.minute,
+               currTime.second,
+               currTime.month,
+               currTime.day,
                currTime.year);
 
     for (uint32_t i = 0; i < 700000; ++i) {

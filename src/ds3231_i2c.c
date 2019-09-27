@@ -1,6 +1,6 @@
 #include "ds3231_i2c.h"
+#include "ds3231.h"
 #include "ds3231_hw.h"
-#include "include/ds3231.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,8 +23,7 @@ static void ds3231_i2c_master_send(const uint8_t data, const uint32_t mode) {
   ds3231_i2c_wait_master();
 }
 
-void ds3231_i2c_read_regs(const uint8_t startAddr, uint8_t *recvData,
-                          const uint8_t count) {
+void ds3231_i2c_read_regs(const uint8_t startAddr, uint8_t *recvData, const uint8_t count) {
   ds3231_i2c_wait_bus();
   ds3231_i2c_master_send(startAddr, I2C_MASTER_CMD_BURST_SEND_START);
 
@@ -58,8 +57,7 @@ void ds3231_i2c_read_reg(const uint8_t addr, uint8_t *out) {
   *out = I2CMasterDataGet(DS3231_I2C_BASE);
 }
 
-void ds3231_i2c_write_regs(const uint8_t startAddr, uint8_t *data,
-                           const uint32_t count) {
+void ds3231_i2c_write_regs(const uint8_t startAddr, uint8_t *data, const uint32_t count) {
   ds3231_i2c_wait_bus();
   ds3231_i2c_master_send(startAddr, I2C_MASTER_CMD_BURST_SEND_START);
 
